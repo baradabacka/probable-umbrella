@@ -1,4 +1,5 @@
 class CartsController < ApplicationController
+  skip_before_action :authorize, only: [:create, :update, :destroy]
   before_action :set_cart, only: [:show, :edit, :update, :destroy]
 rescue_from ActiveRecord::RecordNotFound, with: :invalid_cart
   # GET /carts
@@ -42,6 +43,7 @@ rescue_from ActiveRecord::RecordNotFound, with: :invalid_cart
   def update
     respond_to do |format|
       if @cart.update(cart_params)
+
         format.html { redirect_to @cart, notice: 'Cart was successfully updated.' }
         format.json { head :no_content }
       else
@@ -57,11 +59,12 @@ rescue_from ActiveRecord::RecordNotFound, with: :invalid_cart
     @cart.destroy if @cart.id == session[:cart_id]
     session[:cart_id] = nil
     respond_to do |format|
-      format.html { redirect_to store_url,
-        notice: 'Теперь ваша корзина пуста!'}
+      format.html { redirect_to store_url}
+      format.js { }
       format.json { head :no_content }
     end
   end
+
 
 
 

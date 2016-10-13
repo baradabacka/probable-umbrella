@@ -1,5 +1,7 @@
 class LineItemsController < ApplicationController
+  skip_before_action :authorize, only: :create
   include CurrentCart
+
   before_action :set_cart, only: [:create]
   before_action :set_line_item, only: [:show, :edit, :update, :destroy]
 
@@ -33,11 +35,12 @@ class LineItemsController < ApplicationController
     respond_to do |format|
       if @line_item.save
         session[:counter] = 0
-        format.html { redirect_to(@line_item.cart) }
-      format.xml  { render :xml => @line_item, :status => :created, :location => @line_item }
+        format.html { redirect_to store_url }
+        format.js { @current_item = @line_item }
+        format.xml  { render xml: @line_item, status: :created, location: @line_item }
     else
-      format.html { render :action => "new" }
-      format.xml  { render :xml => @line_item.errors, :status => :unprocessable_entity }
+      format.html { render action: "new" }
+      format.xml  { render xml: @line_item.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -63,10 +66,14 @@ class LineItemsController < ApplicationController
     @line_item.destroy
 
     respond_to do |format|
-      format.html { redirect_to(store_url, :notice => 'Товарная позиция успешно удалена' )}
+      format.html { redirect_to store_url }
       format.xml  { head :ok }
+
     end
   end
+
+
+
 
   private
     # Use callbacks to share common setup or constraints between actions.

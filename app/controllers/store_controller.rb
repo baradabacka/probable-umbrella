@@ -1,4 +1,7 @@
 class StoreController < ApplicationController
+  skip_before_action :authorize
+  include CurrentCart
+  before_action :set_cart
 
 def pose_count
   if session[:counter].nil?
@@ -8,8 +11,12 @@ def pose_count
 end
 
   def index
-    @count = pose_count
-    @products = Product.order(:title)
+    if params[:set_locale]
+      redirect_to store_url(locale: params[:set_locale])
+    else
+      @count = pose_count
+      @products = Product.order(:title)
+    end
   end
 
 end
